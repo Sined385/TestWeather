@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TableManager
 import SwiftyJSON
 import Alamofire
 
@@ -27,17 +26,23 @@ class MainVC: UITableViewController {
     var sortedCitiesDict = [(key: String, value: [ParseCity])]()
     var cities = [ParseCity.init(name: "Loh", id: nil, country: nil, coord: nil), ParseCity.init(name: "Pidor", id: nil, country: nil, coord: nil), ParseCity.init(name: "Aloha", id: nil, country: nil, coord: nil), ParseCity.init(name: "Allah", id: nil, country: nil, coord: nil), ParseCity.init(name: "Shit", id: nil, country: nil, coord: nil), ParseCity.init(name: "Luftwaffe", id: nil, country: nil, coord: nil), ParseCity.init(name: "Piter", id: nil, country: nil, coord: nil), ParseCity.init(name: "Swift", id: nil, country: nil, coord: nil)]
     
+    //var cities = [ParseCity]()
+    
     @IBOutlet weak var citiesTableView: UITableView!
     
     let searchController = UISearchController(searchResultsController: nil)
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        print("awake from nib")
+        print(cities.count)
+
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        makeTable()
+        print("view did load")
+        print(cities.count)
         createSearchController()
         designNavController()
         searchControllerDesign()
@@ -45,16 +50,6 @@ class MainVC: UITableViewController {
         sortedCitiesDict = sortDictionaryForCities()
     }
     
-    func makeTable() {
-        for i in 0..<citiesList.count {
-            citiesTableView.addRow().setConfiguration { (_, cell, _) in
-                let namesArray = Array(self.citiesList.keys)
-                print(self.citiesList.count)
-                print("names array got")
-                cell.textLabel?.text = namesArray[i]
-            }
-        }
-    }
     
     func tableViewDesign() {
         self.tableView.backgroundColor = darkGrey
@@ -78,7 +73,6 @@ class MainVC: UITableViewController {
                 }
             }
         }
-        print(citiesDictForTable)
         return citiesDictForTable
     }
     
@@ -130,7 +124,7 @@ extension MainVC {
             cell.textLabel?.text = text
         }
         cell.detailTextLabel?.text = "►"
-        cell.detailTextLabel?.textColor = white
+        cell.detailTextLabel?.textColor = lightGrey
         return cell
     }
     
@@ -211,17 +205,6 @@ extension MainVC:  UISearchResultsUpdating {
     
 }
 
-struct ParseCity: Decodable {
-    var name: String
-    var id: String?
-    var country: String?
-    var coord: ParseCoord?
-}
-
-struct ParseCoord: Decodable {
-    var lon: String?
-    var lat: String?
-}
 
 
 
