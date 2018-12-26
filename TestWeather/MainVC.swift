@@ -6,27 +6,31 @@
 //  Copyright © 2018 SINED. All rights reserved.
 //
 
+let darkGrey = UIColor.init(hexString: "#191D20")
+let lightGrey = UIColor.init(hexString: "1F2427")
+let orange = UIColor.init(hexString: "#F58223")
+let white = UIColor.init(hexString: "#FFFFFF")
+
 import UIKit
 import SwiftyJSON
 import Alamofire
 
+let kBgQ = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
+let mainQ = DispatchQueue.main
 
 class MainVC: UITableViewController {
     
     let cellID = "CityCell"
-    let darkGrey = UIColor.init(hexString: "#191D20")
-    let lightGrey = UIColor.init(hexString: "1F2427")
-    let orange = UIColor.init(hexString: "#F58223")
-    let white = UIColor.init(hexString: "#FFFFFF")
     let lettersArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
                         "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     var citiesList: [String : ParseCity] = [:]
     var filteredCities = [(key: String, value: [ParseCity])]()
     var filteredCitiesForTable = [ParseCity]()
     var sortedCitiesDict = [(key: String, value: [ParseCity])]()
-    var cities = [ParseCity.init(name: "Loh", id: nil, country: nil, coord: nil), ParseCity.init(name: "Pidor", id: nil, country: nil, coord: nil), ParseCity.init(name: "Aloha", id: nil, country: nil, coord: nil), ParseCity.init(name: "Allah", id: nil, country: nil, coord: nil), ParseCity.init(name: "Shit", id: nil, country: nil, coord: nil), ParseCity.init(name: "Luftwaffe", id: nil, country: nil, coord: nil), ParseCity.init(name: "Piter", id: nil, country: nil, coord: nil), ParseCity.init(name: "Swift", id: nil, country: nil, coord: nil)]
+    var cities = [ParseCity]()
+    var selectedCities: ParseCity?
     
-    //var cities = [ParseCity]()
+    weak var delegateToMenu: MenuCVCDelegate?
     
     @IBOutlet weak var citiesTableView: UITableView!
     
@@ -36,12 +40,12 @@ class MainVC: UITableViewController {
         super.awakeFromNib()
         print("awake from nib")
         print(cities.count)
-
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         print("view did load")
+        makeCitiesList()
         print(cities.count)
         createSearchController()
         designNavController()
@@ -50,6 +54,40 @@ class MainVC: UITableViewController {
         sortedCitiesDict = sortDictionaryForCities()
     }
     
+    func makeCitiesList() {
+        print("making list")
+        kBgQ.async {
+            if let path = Bundle.main.path(forResource: "city", ofType: "list.json") {
+                do {
+                    let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
+                    let jsonObj = try JSON(data: data)
+                    self.parseCities(json: jsonObj)
+                    mainQ.async(execute: {
+                        print("back to main")
+                        self.sortedCitiesDict = self.sortDictionaryForCities()
+                        self.tableView.reloadData()
+                    })
+                } catch let error {
+                    print("parse error: \(error.localizedDescription)")
+                }
+            } else {
+                print("Invalid filename/path.")
+            }
+        }
+    }
+    
+    func parseCities(json: JSON) {
+        for i in 0..<json.count {
+            let id = json[i]["id"]
+            let name = json[i]["name"]
+            let country = json[i]["country"]
+            let lon = json[i]["coord"]["lon"]
+            let lat = json[i]["coord"]["lat"]
+            let coord = ParseCoord.init(lon: String(describing: lon), lat: String(describing: lat))
+            let city = ParseCity.init(name: String(describing: name), id: String(describing: id), country: String(describing: country), coord: coord)
+            cities.append(city)
+        }
+    }
     
     func tableViewDesign() {
         self.tableView.backgroundColor = darkGrey
@@ -79,6 +117,21 @@ class MainVC: UITableViewController {
     func sortDictionaryForCities() -> [(key: String, value: [ParseCity])] {
         let sortedDict = makeCitiesDict().sorted(by: { $0.0 < $1.0 })
         return sortedDict
+    }
+    
+    func createAddAlert(city: ParseCity) {
+        let alert = UIAlertController.init(title: "Add \(city.name) ?", message: nil, preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default) { (UIAlertAction) in
+            self.addCity(city: city)
+        }
+        let cancelAction = UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func addCity(city: ParseCity) {
+        delegateToMenu?.dataChanged(city: city)
     }
     
 }
@@ -130,6 +183,11 @@ extension MainVC {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        if isFiltering() {
+            createAddAlert(city: filteredCitiesForTable[indexPath.row])
+        } else {
+            createAddAlert(city: sortedCitiesDict[indexPath.section].value[indexPath.row])
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -145,7 +203,6 @@ extension MainVC {
         searchController.searchBar.placeholder = "Search city"
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
     }
-    
     func designNavController() {
         self.navigationController?.navigationBar.backgroundColor = darkGrey
         self.navigationController?.navigationBar.barTintColor = darkGrey
@@ -184,7 +241,6 @@ extension MainVC:  UISearchResultsUpdating {
         filteredCitiesForTable = values.filter({ (city) -> Bool in
             return city.name.lowercased().contains(searchText.lowercased())
         })
-        print("filtered \(filteredCitiesForTable)")
         tableView.reloadData()
     }
     
@@ -205,6 +261,10 @@ extension MainVC:  UISearchResultsUpdating {
     
 }
 
+
+protocol MenuCVCDelegate: class {
+    func dataChanged(city: ParseCity)
+}
 
 
 

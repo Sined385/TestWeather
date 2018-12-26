@@ -14,9 +14,11 @@
 		0451406A219C54390071AD08 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04514068219C54390071AD08 /* LaunchScreen.storyboard */; };
 		0456C134219C591E009D36EF /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0456C133219C591E009D36EF /* MainVC.swift */; };
 		048E401A21BA6E2000016A7B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E401921BA6E2000016A7B /* Extensions.swift */; };
-		048E401C21C16A8B00016A7B /* LoadingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E401B21C16A8B00016A7B /* LoadingVC.swift */; };
-		048E401E21C16EF300016A7B /* city.list.json in Resources */ = {isa = PBXBuildFile; fileRef = 048E401D21C16EF300016A7B /* city.list.json */; };
 		048E402021C171BE00016A7B /* Structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E401F21C171BE00016A7B /* Structs.swift */; };
+		0491A1A921CA88AF0099B4F2 /* city.list.json in Resources */ = {isa = PBXBuildFile; fileRef = 0491A1A821CA88AF0099B4F2 /* city.list.json */; };
+		0491A1AB21CA8FA30099B4F2 /* MenuCVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1AA21CA8FA30099B4F2 /* MenuCVC.swift */; };
+		0491A1AD21CFB4030099B4F2 /* MenuCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1AC21CFB4030099B4F2 /* MenuCollectionCell.swift */; };
+		0491A1AF21D3CAF80099B4F2 /* RequestClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1AE21D3CAF80099B4F2 /* RequestClass.swift */; };
 		7003DD5983F113760BCE53EB /* Pods_TestWeather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79E8A2EF1099E9B81F9FB2CB /* Pods_TestWeather.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,9 +32,11 @@
 		0451406B219C54390071AD08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0456C133219C591E009D36EF /* MainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		048E401921BA6E2000016A7B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		048E401B21C16A8B00016A7B /* LoadingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingVC.swift; sourceTree = "<group>"; };
-		048E401D21C16EF300016A7B /* city.list.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = city.list.json; sourceTree = "<group>"; };
 		048E401F21C171BE00016A7B /* Structs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Structs.swift; sourceTree = "<group>"; };
+		0491A1A821CA88AF0099B4F2 /* city.list.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = city.list.json; sourceTree = "<group>"; };
+		0491A1AA21CA8FA30099B4F2 /* MenuCVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCVC.swift; sourceTree = "<group>"; };
+		0491A1AC21CFB4030099B4F2 /* MenuCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCollectionCell.swift; sourceTree = "<group>"; };
+		0491A1AE21D3CAF80099B4F2 /* RequestClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestClass.swift; sourceTree = "<group>"; };
 		214A4402BDAFE278A8E38940 /* Pods-TestWeather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestWeather.release.xcconfig"; path = "Pods/Target Support Files/Pods-TestWeather/Pods-TestWeather.release.xcconfig"; sourceTree = "<group>"; };
 		79E8A2EF1099E9B81F9FB2CB /* Pods_TestWeather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestWeather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E7B8ADD4CDECEF1B53C7BD5 /* Pods-TestWeather.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestWeather.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TestWeather/Pods-TestWeather.debug.xcconfig"; sourceTree = "<group>"; };
@@ -72,14 +76,16 @@
 			isa = PBXGroup;
 			children = (
 				04514060219C54380071AD08 /* Main.storyboard */,
-				048E401F21C171BE00016A7B /* Structs.swift */,
-				048E401B21C16A8B00016A7B /* LoadingVC.swift */,
+				0491A1AE21D3CAF80099B4F2 /* RequestClass.swift */,
+				0491A1AC21CFB4030099B4F2 /* MenuCollectionCell.swift */,
+				0491A1AA21CA8FA30099B4F2 /* MenuCVC.swift */,
 				0456C133219C591E009D36EF /* MainVC.swift */,
+				048E401F21C171BE00016A7B /* Structs.swift */,
 				0451405C219C54380071AD08 /* AppDelegate.swift */,
 				04514068219C54390071AD08 /* LaunchScreen.storyboard */,
 				0451406B219C54390071AD08 /* Info.plist */,
 				04514063219C54380071AD08 /* TestWeather.xcdatamodeld */,
-				048E401D21C16EF300016A7B /* city.list.json */,
+				0491A1A821CA88AF0099B4F2 /* city.list.json */,
 				04514066219C54390071AD08 /* Assets.xcassets */,
 				048E401921BA6E2000016A7B /* Extensions.swift */,
 			);
@@ -164,7 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0451406A219C54390071AD08 /* LaunchScreen.storyboard in Resources */,
-				048E401E21C16EF300016A7B /* city.list.json in Resources */,
+				0491A1A921CA88AF0099B4F2 /* city.list.json in Resources */,
 				04514067219C54390071AD08 /* Assets.xcassets in Resources */,
 				04514062219C54380071AD08 /* Main.storyboard in Resources */,
 			);
@@ -229,11 +235,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				048E402021C171BE00016A7B /* Structs.swift in Sources */,
+				0491A1AB21CA8FA30099B4F2 /* MenuCVC.swift in Sources */,
 				04514065219C54380071AD08 /* TestWeather.xcdatamodeld in Sources */,
 				0456C134219C591E009D36EF /* MainVC.swift in Sources */,
+				0491A1AF21D3CAF80099B4F2 /* RequestClass.swift in Sources */,
+				0491A1AD21CFB4030099B4F2 /* MenuCollectionCell.swift in Sources */,
 				0451405D219C54380071AD08 /* AppDelegate.swift in Sources */,
 				048E401A21BA6E2000016A7B /* Extensions.swift in Sources */,
-				048E401C21C16A8B00016A7B /* LoadingVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
