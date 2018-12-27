@@ -12,15 +12,17 @@ private let reuseIdentifier = "cell"
 
 class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     
-    
     @IBAction func locationCleanButton(_ sender: Any) {
         let defaults = UserDefaults.standard
         defaults.set(nil, forKey: "selectedCities")
         selectedCities = []
+        cityInfo = []
         collectionView.reloadData()
     }
     
     var selectedCities = [ParseCity]()
+    
+    var cityInfo = [CityWeather]()
     
     let weatherRequest = WeatherRequest.init()
     
@@ -47,10 +49,12 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     
     func dataChanged(city: ParseCity) {
         selectedCities.append(city)
-        print(selectedCities)
-        self.collectionView.reloadData()
         defaults.set(try? PropertyListEncoder().encode(selectedCities), forKey: "selectedCities")
-        weatherRequest.weatherRequest(city: city)
+        weatherRequest.weatherRequest(city: city) { (cityWeather) -> Void in
+            self.cityInfo.append(cityWeather)
+            self.collectionView.reloadData()
+            print(cityWeather)
+        }
     }
     
     func checkForUserDefaults() {
@@ -65,7 +69,6 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let segueID = segue.identifier else { return }
-        
         switch segueID {
         case "tableSegue":
             let tableVC = segue.destination as! MainVC
@@ -74,11 +77,7 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         default:
             break
         }
-        
     }
-    
-    
-    
     
     /*
     // MARK: - Navigation

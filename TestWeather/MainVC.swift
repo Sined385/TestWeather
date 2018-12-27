@@ -84,7 +84,7 @@ class MainVC: UITableViewController {
             let lon = json[i]["coord"]["lon"]
             let lat = json[i]["coord"]["lat"]
             let coord = ParseCoord.init(lon: String(describing: lon), lat: String(describing: lat))
-            let city = ParseCity.init(name: String(describing: name), id: String(describing: id), country: String(describing: country), coord: coord)
+            let city = ParseCity.init(name: String(describing: name), id: String(describing: id), country: String(describing: country), coord: coord, cityWeather: nil)
             cities.append(city)
         }
     }

@@ -13,6 +13,7 @@ struct ParseCity: Codable {
     var id: String?
     var country: String?
     var coord: ParseCoord?
+    var cityWeather: CityWeather?
 }
 
 struct ParseCoord: Codable {
@@ -40,7 +41,7 @@ struct WeatherDescription: Codable {
     var main: String
 }
 
-struct Wind {
+struct Wind: Codable {
     var deg: String
     var speed: String
 }
@@ -51,11 +52,10 @@ struct ListOfWeather: Codable {
     var dtTxt: String
     var mainOfWeather: MainOfWeather
     var weatherDescription: WeatherDescription
-    var wind: String
+    var wind: Wind
 }
 
-struct cityWeather: Codable {
-    var cityProperties: ParseCity
+struct CityWeather: Codable {
     var cnt: String
     var cod: String
     var listOfWeather: [ListOfWeather]
