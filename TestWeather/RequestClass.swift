@@ -16,16 +16,17 @@ class WeatherRequest: NSObject {
     
     let key = "fc411ce5be5c4b9985861401d501c0eb"
     
-    func weatherRequest(city: ParseCity, completion: @escaping (CityWeather) -> Void) {
-        let url = "http://api.openweathermap.org/data/2.5/forecast?id=\(city.id!)&APPID=\(key)"
+    func weatherRequest(cityToRequest: ParseCity, completion: @escaping (CityWeather) -> Void) {
+        let url = "http://api.openweathermap.org/data/2.5/forecast?id=\(cityToRequest.id!)&APPID=\(key)"
         requestQ.async {
             request(url, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: nil).responseJSON { (response) in
                 switch(response.result) {
                 case .success(let data):
                     let json = data as! [String : AnyObject]
-                    let weatherForCity = self.parseWeather(data: json, city: city)
+                    let weatherForCity = self.parseWeather(data: json, city: cityToRequest)
                     mainQ.async {
-                        completion(weatherForCity!)
+                        guard let weatherForCity = weatherForCity else { return }
+                        completion(weatherForCity)
                     }
                 case .failure(let error):
                     print(error)
@@ -57,10 +58,14 @@ class WeatherRequest: NSObject {
             mainOfWeather.humidity = String.init(describing: main["humidity"])
             mainOfWeather.pressure = String.init(describing: main["pressure"])
             mainOfWeather.seaLevel = String.init(describing: main["sea_level"])
-            mainOfWeather.temp = String.init(describing: main["temp"])
-            mainOfWeather.tempKF = String.init(describing: main["temp_kf"])
-            mainOfWeather.tempMax = String.init(describing: main["temp_max"])
-            mainOfWeather.tempMin = String.init(describing: main["temp_min"])
+            //mainOfWeather.temp = String.init(describing: main["temp"])
+            mainOfWeather.temp = decideOptional(optionalValue: main["temp"]!)
+            //mainOfWeather.tempKF = String.init(describing: main["temp_kf"]!)
+            mainOfWeather.tempKF = decideOptional(optionalValue: main["temp_kf"]!)
+            //mainOfWeather.tempMax = String.init(describing: main["temp_max"]!)
+            mainOfWeather.tempMax = decideOptional(optionalValue: main["temp_max"]!)
+            //mainOfWeather.tempMin = String.init(describing: main["temp_min"]!)
+            mainOfWeather.tempMin = decideOptional(optionalValue: main["temp_min"]!)
             guard let weatherDesc = list?[i]["weather"] as? AnyObject else { return nil }
             weatherDescription.description = String.init(describing: weatherDesc["description"])
             weatherDescription.main = String.init(describing: weatherDesc["main"])
@@ -79,6 +84,12 @@ class WeatherRequest: NSObject {
         }
         cityWeather.listOfWeather = listOfWeather
         return cityWeather
+    }
+    
+    private func decideOptional(optionalValue: Any?) -> String {
+        guard let value = optionalValue else { return String() }
+        let string = String(describing: value)
+        return string
     }
     
     

@@ -16,13 +16,10 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         let defaults = UserDefaults.standard
         defaults.set(nil, forKey: "selectedCities")
         selectedCities = []
-        cityInfo = []
         collectionView.reloadData()
     }
     
     var selectedCities = [ParseCity]()
-    
-    var cityInfo = [CityWeather]()
     
     let weatherRequest = WeatherRequest.init()
     
@@ -31,7 +28,9 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         checkForUserDefaults()
-        collectionView.reloadData()
+        print(selectedCities.count)
+        requestWeatherForDefauldCities(selectedCities: selectedCities)
+        //collectionView.reloadData()
         designNavController()
         self.collectionView.backgroundColor = darkGrey
     }
@@ -48,17 +47,27 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     }
     
     func dataChanged(city: ParseCity) {
-        selectedCities.append(city)
-        defaults.set(try? PropertyListEncoder().encode(selectedCities), forKey: "selectedCities")
-        weatherRequest.weatherRequest(city: city) { (cityWeather) -> Void in
-            self.cityInfo.append(cityWeather)
+        var cityToAppend = city
+        weatherRequest.weatherRequest(cityToRequest: city) { (cityWeather) -> Void in
             self.collectionView.reloadData()
-            print(cityWeather)
+            cityToAppend.cityWeather = cityWeather
+            self.selectedCities.append(cityToAppend)
+            self.collectionView.reloadData()
+            self.defaults.set(try? PropertyListEncoder().encode(self.selectedCities), forKey: "selectedCities")
+        }
+    }
+    
+    func requestWeatherForDefauldCities(selectedCities: [ParseCity]?) {
+        if selectedCities == nil { return }
+        for i in 0..<selectedCities!.count {
+            weatherRequest.weatherRequest(cityToRequest: selectedCities![i]) { (cityWeather) in
+                self.selectedCities[i].cityWeather = cityWeather
+                self.collectionView.reloadData()
+            }
         }
     }
     
     func checkForUserDefaults() {
-        print("checkForUs")
         guard let citiesData = defaults.object(forKey: "selectedCities") as? Data else {
             selectedCities = [ParseCity]()
             return
@@ -105,8 +114,31 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         cell.cityLabel.text = selectedCities[indexPath.row].name
         cell.cityLabel.textColor = white
         cell.temperatureLabel.textColor = white
+        guard let temperatureMin = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMin else { return UICollectionViewCell() }
+         guard let temperatureMax = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMax else { return UICollectionViewCell() }
+        let temperature = makeMinAndMaxTemp(minTemp: temperatureMin, maxTemp: temperatureMax)
+        //print(decideOptionalTemp(oneCity: selectedCities[indexPath.row]))
+        cell.temperatureLabel.text = temperature
         return cell
     }
+    
+    func decideOptionalTemp(oneCity: ParseCity) -> String {
+        guard let weather = oneCity.cityWeather?.listOfWeather[0].mainOfWeather.temp else { return String() }
+        return weather
+    }
+    
+    func makeMinAndMaxTemp(minTemp: String, maxTemp: String) -> String {
+        let kelvinKoef: Double = 273
+        guard let minimum = Double(minTemp) else { return String() }
+        guard let maximum = Double(maxTemp) else { return String() }
+        let min = minimum - kelvinKoef
+        let max = maximum - kelvinKoef
+        let string = String.init(format: "%.f", max) + "/" + String.init(format: "%.f", min) + " °C"
+        return string
+    }
+    
+    
+    
 
     // MARK: UICollectionViewDelegate
 
