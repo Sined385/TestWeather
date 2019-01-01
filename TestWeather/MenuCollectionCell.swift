@@ -10,7 +10,9 @@ import UIKit
 
 class MenuCollectionCell: UICollectionViewCell {
     
+    @IBOutlet weak var weatherIconView: UIImageView!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
+    
     
 }

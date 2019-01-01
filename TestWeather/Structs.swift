@@ -45,6 +45,9 @@ struct Wind: Codable {
     var deg: String
     var speed: String
 }
+struct Rain: Codable {
+    var chance: String
+}
 
 struct ListOfWeather: Codable {
     var clouds: Clouds
@@ -53,6 +56,7 @@ struct ListOfWeather: Codable {
     var mainOfWeather: MainOfWeather
     var weatherDescription: WeatherDescription
     var wind: Wind
+    var rain: Rain
 }
 
 struct CityWeather: Codable {

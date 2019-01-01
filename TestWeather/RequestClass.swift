@@ -48,38 +48,39 @@ class WeatherRequest: NSObject {
         var mainOfWeather = MainOfWeather.init(grndLevel: String(), humidity: String(), pressure: String(), seaLevel: String(), temp: String(), tempKF: String(), tempMax: String(), tempMin: String())
         var weatherDescription = WeatherDescription.init(description: String(), main: String())
         var wind = Wind.init(deg: String(), speed: String())
-        var oneDayWeather = ListOfWeather.init(clouds: clouds, dt: String(), dtTxt: String(), mainOfWeather: mainOfWeather, weatherDescription: weatherDescription, wind: wind)
+        var rain = Rain.init(chance: String())
+        var oneDayWeather = ListOfWeather.init(clouds: clouds, dt: String(), dtTxt: String(), mainOfWeather: mainOfWeather, weatherDescription: weatherDescription, wind: wind, rain: rain)
         for i in 0..<list!.count {
             //O for optional
             guard let cloudsO = list?[i]["clouds"] as? AnyObject else { return nil }
             clouds.all = String.init(describing: cloudsO["all"])
             guard let main = list?[i]["main"] as? AnyObject else { return nil }
             mainOfWeather.grndLevel = String.init(describing: main["grnd_level"])
-            mainOfWeather.humidity = String.init(describing: main["humidity"])
+            mainOfWeather.humidity = decideOptional(optionalValue: main["humidity"]!)
             mainOfWeather.pressure = String.init(describing: main["pressure"])
             mainOfWeather.seaLevel = String.init(describing: main["sea_level"])
-            //mainOfWeather.temp = String.init(describing: main["temp"])
             mainOfWeather.temp = decideOptional(optionalValue: main["temp"]!)
-            //mainOfWeather.tempKF = String.init(describing: main["temp_kf"]!)
             mainOfWeather.tempKF = decideOptional(optionalValue: main["temp_kf"]!)
-            //mainOfWeather.tempMax = String.init(describing: main["temp_max"]!)
             mainOfWeather.tempMax = decideOptional(optionalValue: main["temp_max"]!)
-            //mainOfWeather.tempMin = String.init(describing: main["temp_min"]!)
             mainOfWeather.tempMin = decideOptional(optionalValue: main["temp_min"]!)
-            guard let weatherDesc = list?[i]["weather"] as? AnyObject else { return nil }
-            weatherDescription.description = String.init(describing: weatherDesc["description"])
-            weatherDescription.main = String.init(describing: weatherDesc["main"])
+            guard let weatherDesc = list![i]["weather"] as? [AnyObject] else { return nil }
+            guard let mainDescription = weatherDesc[0]["main"] else { return nil }
+            weatherDescription.description = decideOptional(optionalValue: weatherDesc[0]["description"]!)
+            weatherDescription.main = decideOptional(optionalValue: mainDescription)
             guard let dtTxt = list?[i]["dt_txt"] else { return nil }
             guard let dt = list?[i]["dt"] else { return nil }
             guard let windO = list?[i]["wind"] as? AnyObject else { return nil }
             wind.deg = String.init(describing: windO["deg"])
-            wind.speed = String.init(describing: windO["speed"])
+            wind.speed = decideOptional(optionalValue: windO["speed"]!)
+            guard let rainO = list?[i]["rain"] as? AnyObject else { return nil }
+            rain.chance = decideOptional(optionalValue: rainO["3h"])
             oneDayWeather.clouds = clouds
             oneDayWeather.dt = String.init(describing: dt)
             oneDayWeather.dtTxt = String.init(describing: dtTxt)
             oneDayWeather.mainOfWeather = mainOfWeather
             oneDayWeather.weatherDescription = weatherDescription
             oneDayWeather.wind = wind
+            oneDayWeather.rain = rain
             listOfWeather.append(oneDayWeather)
         }
         cityWeather.listOfWeather = listOfWeather

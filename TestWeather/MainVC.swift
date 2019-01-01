@@ -132,6 +132,7 @@ class MainVC: UITableViewController {
     
     func addCity(city: ParseCity) {
         delegateToMenu?.dataChanged(city: city)
+        print(city)
     }
     
 }

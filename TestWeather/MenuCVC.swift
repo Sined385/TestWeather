@@ -21,6 +21,8 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     
     var selectedCities = [ParseCity]()
     
+    var currentIndex: IndexPath?
+    
     let weatherRequest = WeatherRequest.init()
     
     let defaults = UserDefaults.standard
@@ -28,11 +30,12 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         checkForUserDefaults()
-        print(selectedCities.count)
         requestWeatherForDefauldCities(selectedCities: selectedCities)
-        //collectionView.reloadData()
+        collectionView.reloadData()
         designNavController()
         self.collectionView.backgroundColor = darkGrey
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
     }
 
     func designNavController() {
@@ -49,7 +52,6 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
     func dataChanged(city: ParseCity) {
         var cityToAppend = city
         weatherRequest.weatherRequest(cityToRequest: city) { (cityWeather) -> Void in
-            self.collectionView.reloadData()
             cityToAppend.cityWeather = cityWeather
             self.selectedCities.append(cityToAppend)
             self.collectionView.reloadData()
@@ -83,21 +85,23 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
             let tableVC = segue.destination as! MainVC
             tableVC.delegateToMenu = self
             break
+        case "extendedMenuSegue":
+            let extendedMenu = segue.destination as! ExtendedMenuVC
+            guard let index = currentIndex else { return }
+            print("segueIndex \(index)")
+            extendedMenu.city = selectedCities[index.row]
         default:
             break
         }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        currentIndex = indexPath
+        collectionView.reloadData()
+        performSegue(withIdentifier: "extendedMenuSegue", sender: nil)
     }
-    */
-
+    
+   
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -117,8 +121,8 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         guard let temperatureMin = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMin else { return UICollectionViewCell() }
          guard let temperatureMax = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMax else { return UICollectionViewCell() }
         let temperature = makeMinAndMaxTemp(minTemp: temperatureMin, maxTemp: temperatureMax)
-        //print(decideOptionalTemp(oneCity: selectedCities[indexPath.row]))
         cell.temperatureLabel.text = temperature
+        cell.weatherIconView.image = caseForWeather(city: selectedCities[indexPath.row])
         return cell
     }
     
@@ -137,38 +141,31 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         return string
     }
     
+    func caseForWeather(city: ParseCity) -> UIImage {
+        guard let variable = city.cityWeather?.listOfWeather[0].weatherDescription.main else { return UIImage() }
+        switch variable {
+        case "Thunderstorm":
+            return UIImage.init(named: "Weather2")!
+        case "Drizzle":
+            return UIImage.init(named: "Weather5")!
+        case "Rain":
+            return UIImage.init(named: "Weather5")!
+        case "Snow":
+            return UIImage.init(named: "Weather1")!
+        case "Clear":
+            return UIImage.init(named: "Weather3")!
+        case "Clouds":
+            return UIImage.init(named: "Weather4")!
+        default:
+            print("none of cases accepted")
+            return UIImage()
+        }
+    }
     
+    private func decideOptional(optionalValue: Any?) -> String {
+        guard let value = optionalValue else { return String() }
+        let string = String(describing: value)
+        return string
+    }
     
-
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
-
 }

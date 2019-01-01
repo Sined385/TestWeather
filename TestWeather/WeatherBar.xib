@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WeatherBar" customModule="TestWeather" customModuleProvider="target">
+            <connections>
+                <outlet property="textLabel" destination="bWs-OK-7Ov" id="nSg-gr-xuB"/>
+                <outlet property="weakDayLabel" destination="90g-2P-9Je" id="819-Vr-xFg"/>
+                <outlet property="weatherIconImage" destination="w5t-BO-Ipi" id="Awa-uz-gL8"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Y1I-k9-abs">
+            <rect key="frame" x="0.0" y="0.0" width="60" height="90"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="hui" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bWs-OK-7Ov">
+                    <rect key="frame" x="9" y="49.5" width="42" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="90g-2P-9Je">
+                    <rect key="frame" x="13" y="74" width="35" height="12"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="w5t-BO-Ipi">
+                    <rect key="frame" x="10" y="7" width="40" height="40"/>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" red="0.0" green="0.56904578210000001" blue="0.57461684940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="90g-2P-9Je" firstAttribute="top" secondItem="bWs-OK-7Ov" secondAttribute="bottom" constant="4" id="2mq-ek-oqu"/>
+                <constraint firstItem="7Dn-Tv-Fm3" firstAttribute="trailing" secondItem="bWs-OK-7Ov" secondAttribute="trailing" constant="9" id="3Sn-6I-gRG"/>
+                <constraint firstItem="7Dn-Tv-Fm3" firstAttribute="trailing" secondItem="90g-2P-9Je" secondAttribute="trailing" constant="12" id="86k-Uu-015"/>
+                <constraint firstItem="w5t-BO-Ipi" firstAttribute="leading" secondItem="7Dn-Tv-Fm3" secondAttribute="leading" constant="10" id="GHE-2Y-lHP"/>
+                <constraint firstItem="7Dn-Tv-Fm3" firstAttribute="trailing" secondItem="w5t-BO-Ipi" secondAttribute="trailing" constant="10" id="OJC-Jd-7ca"/>
+                <constraint firstItem="90g-2P-9Je" firstAttribute="leading" secondItem="7Dn-Tv-Fm3" secondAttribute="leading" constant="13" id="OZe-FS-PVN"/>
+                <constraint firstItem="7Dn-Tv-Fm3" firstAttribute="bottom" secondItem="90g-2P-9Je" secondAttribute="bottom" constant="4" id="OzY-WU-nax"/>
+                <constraint firstItem="w5t-BO-Ipi" firstAttribute="top" secondItem="7Dn-Tv-Fm3" secondAttribute="top" constant="7" id="Uvz-7r-FTa"/>
+                <constraint firstItem="bWs-OK-7Ov" firstAttribute="top" secondItem="w5t-BO-Ipi" secondAttribute="bottom" constant="2.5" id="VcY-PH-IzS"/>
+                <constraint firstItem="bWs-OK-7Ov" firstAttribute="leading" secondItem="7Dn-Tv-Fm3" secondAttribute="leading" constant="9" id="kHM-cK-LoK"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="7Dn-Tv-Fm3"/>
+            <point key="canvasLocation" x="128" y="83.658170914542737"/>
+        </view>
+    </objects>
+</document>

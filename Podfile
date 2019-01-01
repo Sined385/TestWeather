@@ -9,5 +9,6 @@ target 'TestWeather' do
   pod 'SwiftyJSON', '~> 4.0'
   pod 'Alamofire', '~> 4.7'
   pod 'TableManager'
+  pod 'PureLayout'
   
 end
