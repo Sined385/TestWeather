@@ -63,7 +63,6 @@ class MainVC: UITableViewController {
                     let jsonObj = try JSON(data: data)
                     self.parseCities(json: jsonObj)
                     mainQ.async(execute: {
-                        print("back to main")
                         self.sortedCitiesDict = self.sortDictionaryForCities()
                         self.tableView.reloadData()
                     })
@@ -198,12 +197,14 @@ extension MainVC {
 }
 
 extension MainVC {
+    
     func searchControllerDesign() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search city"
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
     }
+    
     func designNavController() {
         self.navigationController?.navigationBar.backgroundColor = darkGrey
         self.navigationController?.navigationBar.barTintColor = darkGrey

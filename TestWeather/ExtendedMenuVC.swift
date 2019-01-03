@@ -11,7 +11,8 @@ import UIKit
 class ExtendedMenuVC: UIViewController {
     
     var city: ParseCity?
-
+    var sortListOfWeather = [[ListOfWeather]]()
+    
     @IBOutlet weak var bigWeatherImageView: UIImageView!
     @IBOutlet weak var windImageView: UIImageView!
     @IBOutlet weak var chanceImageView: UIImageView!
@@ -24,17 +25,25 @@ class ExtendedMenuVC: UIViewController {
     @IBOutlet weak var humidityNameLabel: UILabel!
     @IBOutlet weak var currentTempLabel: UILabel!
     
-    @IBOutlet weak var weatherBarIcon: WeatherBar!
+    @IBOutlet weak var barWeatherButton0: WeatherBarButton!
+    @IBOutlet weak var barWeatherButton1: WeatherBarButton!
+    @IBOutlet weak var barWeatherButton2: WeatherBarButton!
+    @IBOutlet weak var barWeatherButton3: WeatherBarButton!
+    @IBOutlet weak var barWeatherButton4: WeatherBarButton!
+    
+    @IBOutlet var barWeatherButtonCollection: [WeatherBarButton]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        sortListOfWeather = sortWeatherByDays(city: city!)
         designNavController()
+        setLabelsStyle()
         view.backgroundColor = darkGrey
         self.title = city?.name
-        setBigImage(cityWithImage: city)
-        setLabels(cityWithTemp: city)
+        setLabelsText(weather: sortListOfWeather[0][0])
         setThreeImages()
-        setUpBar()
+        setUpButtons()
+        setButtonsColor(number: 0)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -42,16 +51,33 @@ class ExtendedMenuVC: UIViewController {
         city = nil
     }
     
-    func setUpBar() {
-        weatherBarIcon.setup()
-        weatherBarIcon.backgroundColor = orange
-        weatherBarIcon.temperatureText = "100"
+    func setUpButtons() {
+        for i in 0..<barWeatherButtonCollection.count {
+            buttonTitles(button: barWeatherButtonCollection[i], index: i)
+        }
     }
     
-    func setBigImage(cityWithImage: ParseCity?) {
-        guard let cityWithImage = cityWithImage else { return }
-        let image = caseForWeather(city: cityWithImage)
-        bigWeatherImageView.image = image
+    func buttonTitles(button: WeatherBarButton, index: Int) {
+        button.setup()
+        button.backgroundColor = lightGrey
+        button.temperatureLabel.text = convertTemp(temp: sortListOfWeather[index][0].mainOfWeather.temp)
+        button.weekdayLabel.text = sortListOfWeather[index][0].weekday
+        button.weatherImageView?.image = caseForWeather(weather: sortListOfWeather[index][0])
+    }
+   
+    func sortWeatherByDays(city: ParseCity) -> [[ListOfWeather]] {
+        var sortedList = [[ListOfWeather]]()
+        let listOfWeather = city.cityWeather!.listOfWeather
+        for i in 0..<listOfWeather.count {
+            var oneDay = [ListOfWeather]()
+            for k in 0..<listOfWeather.count {
+                if listOfWeather[k].weekday == listOfWeather[i].weekday {
+                    oneDay.append(listOfWeather[k])
+                }
+            }
+            sortedList.append(oneDay)
+        }
+        return sortedList.uniqued()
     }
     
     func designNavController() {
@@ -67,8 +93,8 @@ class ExtendedMenuVC: UIViewController {
         self.navigationController?.title = city?.name
     }
     
-    func caseForWeather(city: ParseCity) -> UIImage {
-        guard let variable = city.cityWeather?.listOfWeather[0].weatherDescription.main else { return UIImage() }
+    func caseForWeather(weather: ListOfWeather) -> UIImage {
+        let variable = weather.weatherDescription.main
         switch variable {
         case "Thunderstorm":
             return UIImage.init(named: "Weather2_Big")!
@@ -88,6 +114,14 @@ class ExtendedMenuVC: UIViewController {
         }
     }
     
+    func convertTemp(temp: String) -> String {
+        let kelvinKoef: Double = 273
+        guard let temp = Double(temp) else { return String() }
+        let tempC = temp - kelvinKoef
+        let string = String.init(format: "%.f", tempC) + "°C"
+        return string
+    }
+    
     func setThreeImages() {
         let humidityImage = UIImage.init(named: "Humidity")
         humidityImageView.image = humidityImage
@@ -97,31 +131,34 @@ class ExtendedMenuVC: UIViewController {
         windImageView.image = windImage
     }
     
-    func setLabels(cityWithTemp: ParseCity?) {
-        guard let cityNoOpt = cityWithTemp else { return }
-        currentTempLabel.textColor = white
-        guard let currentTemp = cityWithTemp?.cityWeather?.listOfWeather[0].mainOfWeather.temp else { return }
-        currentTempLabel.text = konvertCelvins(celvins: currentTemp)
+    func setLabelsStyle() {
         windNameLabel.text = "Wind"
         windNameLabel.textColor = white
         chanceNameLabel.text = "Chance"
         chanceNameLabel.textColor = white
         humidityNameLabel.text = "Humidity"
         humidityNameLabel.textColor = white
-        guard let humidity = cityNoOpt.cityWeather?.listOfWeather[0].mainOfWeather.humidity else { return }
-        humidityLabel.text = humidity + "%"
         humidityLabel.textColor = white
-        guard let windSpeed = cityNoOpt.cityWeather?.listOfWeather[0].wind.speed else { return }
-        windSpeedLabel.text = windSpeed + "m/s"
         windSpeedLabel.textColor = white
         chanceLabel.textColor = white
-        guard let rain = cityNoOpt.cityWeather?.listOfWeather[0].rain.chance else { return }
-        if rain == "" {
+        currentTempLabel.textColor = white
+    }
+    
+    func setLabelsText(weather: ListOfWeather) {
+        currentTempLabel.text = konvertCelvins(celvins: weather.mainOfWeather.temp)
+        humidityLabel.text = weather.mainOfWeather.humidity + "%"
+        windSpeedLabel.text = weather.wind.speed + "m/s"
+        let rain = weather.rain.chance
+        print(rain)
+        if rain == nil {
             chanceLabel.text = "0" + "%"
         } else {
+            print(rain)
             chanceLabel.text = String.init(format: "%.f1", rain) + "%"
         }
+        bigWeatherImageView.image = caseForWeather(weather: weather)
     }
+    
     
     func konvertCelvins(celvins: String) -> String {
         let kelvinKoef: Double = 273
@@ -137,4 +174,46 @@ class ExtendedMenuVC: UIViewController {
         return string
     }
     
+    func setButtonsColor(number: Int) {
+        for i in 0..<barWeatherButtonCollection.count {
+            barWeatherButtonCollection[i].backgroundColor = lightGrey
+        }
+        barWeatherButtonCollection[number].backgroundColor = orange
+    }
+    
+    @IBAction func barWeatherButtonAction0(_ sender: UIButton) {
+        setLabelsText(weather: sortListOfWeather[0][0])
+        setButtonsColor(number: 0)
+    }
+    
+    @IBAction func barWeatherButtonAction1(_ sender: Any) {
+        setLabelsText(weather: sortListOfWeather[1][0])
+        setButtonsColor(number: 1)
+    }
+    
+    
+    @IBAction func barWeatherButtonAction2(_ sender: Any) {
+        setLabelsText(weather: sortListOfWeather[2][0])
+        setButtonsColor(number: 2)
+    }
+    
+    @IBAction func barWeatherButtonAction3(_ sender: Any) {
+        setLabelsText(weather: sortListOfWeather[3][0])
+        setButtonsColor(number: 3)
+    }
+    
+    @IBAction func barWeatherButtonAction4(_ sender: Any) {
+        setLabelsText(weather: sortListOfWeather[4][0])
+        setButtonsColor(number: 4)
+    }
+    
+    
 }
+
+public extension Array where Element: Hashable {
+    func uniqued() -> [Element] {
+        var seen = Set<Element>()
+        return filter{ seen.insert($0).inserted }
+    }
+}
+

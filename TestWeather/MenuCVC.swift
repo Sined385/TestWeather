@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CoreLocation
+import UserNotifications
 
 private let reuseIdentifier = "cell"
 

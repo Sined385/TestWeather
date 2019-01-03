@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ParseCity: Codable {
+struct ParseCity: Codable, Equatable, Hashable {
     var name: String
     var id: String?
     var country: String?
@@ -16,16 +16,16 @@ struct ParseCity: Codable {
     var cityWeather: CityWeather?
 }
 
-struct ParseCoord: Codable {
+struct ParseCoord: Codable, Equatable, Hashable {
     var lon: String?
     var lat: String?
 }
 
-struct Clouds: Codable {
+struct Clouds: Codable, Equatable, Hashable {
     var all: String
 }
 
-struct MainOfWeather: Codable {
+struct MainOfWeather: Codable, Equatable, Hashable {
     var grndLevel: String
     var humidity: String
     var pressure: String
@@ -36,20 +36,20 @@ struct MainOfWeather: Codable {
     var tempMin: String
 }
 
-struct WeatherDescription: Codable {
+struct WeatherDescription: Codable, Equatable, Hashable {
     var description: String
     var main: String
 }
 
-struct Wind: Codable {
+struct Wind: Codable, Equatable, Hashable {
     var deg: String
     var speed: String
 }
-struct Rain: Codable {
+struct Rain: Codable, Equatable, Hashable {
     var chance: String
 }
 
-struct ListOfWeather: Codable {
+struct ListOfWeather: Codable, Equatable, Hashable {
     var clouds: Clouds
     var dt: String
     var dtTxt: String
@@ -57,9 +57,10 @@ struct ListOfWeather: Codable {
     var weatherDescription: WeatherDescription
     var wind: Wind
     var rain: Rain
+    var weekday: String
 }
 
-struct CityWeather: Codable {
+struct CityWeather: Codable, Equatable, Hashable {
     var cnt: String
     var cod: String
     var listOfWeather: [ListOfWeather]

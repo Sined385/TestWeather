@@ -49,7 +49,8 @@ class WeatherRequest: NSObject {
         var weatherDescription = WeatherDescription.init(description: String(), main: String())
         var wind = Wind.init(deg: String(), speed: String())
         var rain = Rain.init(chance: String())
-        var oneDayWeather = ListOfWeather.init(clouds: clouds, dt: String(), dtTxt: String(), mainOfWeather: mainOfWeather, weatherDescription: weatherDescription, wind: wind, rain: rain)
+        var weekday = String()
+        var oneDayWeather = ListOfWeather.init(clouds: clouds, dt: String(), dtTxt: String(), mainOfWeather: mainOfWeather, weatherDescription: weatherDescription, wind: wind, rain: rain, weekday: weekday)
         for i in 0..<list!.count {
             //O for optional
             guard let cloudsO = list?[i]["clouds"] as? AnyObject else { return nil }
@@ -57,8 +58,8 @@ class WeatherRequest: NSObject {
             guard let main = list?[i]["main"] as? AnyObject else { return nil }
             mainOfWeather.grndLevel = String.init(describing: main["grnd_level"])
             mainOfWeather.humidity = decideOptional(optionalValue: main["humidity"]!)
-            mainOfWeather.pressure = String.init(describing: main["pressure"])
-            mainOfWeather.seaLevel = String.init(describing: main["sea_level"])
+            mainOfWeather.pressure = decideOptional(optionalValue: main["pressure"]!)
+            mainOfWeather.seaLevel = decideOptional(optionalValue: main["sea_level"]!)
             mainOfWeather.temp = decideOptional(optionalValue: main["temp"]!)
             mainOfWeather.tempKF = decideOptional(optionalValue: main["temp_kf"]!)
             mainOfWeather.tempMax = decideOptional(optionalValue: main["temp_max"]!)
@@ -75,12 +76,14 @@ class WeatherRequest: NSObject {
             guard let rainO = list?[i]["rain"] as? AnyObject else { return nil }
             rain.chance = decideOptional(optionalValue: rainO["3h"])
             oneDayWeather.clouds = clouds
-            oneDayWeather.dt = String.init(describing: dt)
-            oneDayWeather.dtTxt = String.init(describing: dtTxt)
+            oneDayWeather.dt = decideOptional(optionalValue: dt)
+            oneDayWeather.dtTxt = decideOptional(optionalValue: dtTxt)
             oneDayWeather.mainOfWeather = mainOfWeather
             oneDayWeather.weatherDescription = weatherDescription
             oneDayWeather.wind = wind
             oneDayWeather.rain = rain
+            weekday = makeWeekDay(dayNumber: getDayOfWeek(convertUnixDate(oneDayWeather.dt))!)
+            oneDayWeather.weekday = weekday
             listOfWeather.append(oneDayWeather)
         }
         cityWeather.listOfWeather = listOfWeather
@@ -93,6 +96,45 @@ class WeatherRequest: NSObject {
         return string
     }
     
+    func convertUnixDate(_ unixTimeStamp: String) -> String {
+        let date = Date(timeIntervalSince1970: Double(unixTimeStamp)!)
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "yyyy-MM-dd" //Specify your format that you want
+        let strDate = dateFormatter.string(from: date)
+        return strDate
+    }
+    
+    func getDayOfWeek(_ today:String) -> Int? {
+        let formatter  = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        guard let todayDate = formatter.date(from: today) else { return nil }
+        let myCalendar = Calendar(identifier: .gregorian)
+        let weekDay = myCalendar.component(.weekday, from: todayDate)
+        return weekDay
+    }
+    
+    func makeWeekDay(dayNumber: Int) -> String {
+        switch dayNumber {
+        case 1:
+            return "Sunday"
+        case 2:
+            return "Monday"
+        case 3:
+            return "Tuesday"
+        case 4:
+            return "Wednesday"
+        case 5:
+            return "Thursday"
+        case 6:
+            return "Friday"
+        case 7:
+            return "Saturday"
+        default:
+            return ""
+        }
+    }
     
 }
 
