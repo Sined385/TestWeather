@@ -12,12 +12,17 @@ import UserNotifications
 
 private let reuseIdentifier = "cell"
 
-class MenuCVC: UICollectionViewController, MenuCVCDelegate {
+class MenuCVC: UICollectionViewController, MenuCVCDelegate, CLLocationManagerDelegate, DeleteCityDelegate {
     
+    var locationManager = CLLocationManager()
+    var latitude: String?
+    var longtitude: String?
+
     @IBAction func locationCleanButton(_ sender: Any) {
-        let defaults = UserDefaults.standard
-        defaults.set(nil, forKey: "selectedCities")
-        selectedCities = []
+        //let defaults = UserDefaults.standard
+        //defaults.set(nil, forKey: "selectedCities")
+        //selectedCities = []
+        weatherRequest.requestByCoordinates(lon: longtitude!, lat: latitude!)
         collectionView.reloadData()
     }
     
@@ -38,9 +43,23 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         self.collectionView.backgroundColor = darkGrey
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
+        locationManager.requestAlwaysAuthorization()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedAlways {
+            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
+                if CLLocationManager.isRangingAvailable() {
+                    self.latitude = String.init(format: "%.f", locationManager.location!.coordinate.latitude)
+                    self.longtitude = String.init(format: "%.f", locationManager.location!.coordinate.longitude)
+                }
+            }
+        }
     }
 
-    func designNavController() {
+    private func designNavController() {
         self.navigationController?.navigationBar.backgroundColor = darkGrey
         self.navigationController?.navigationBar.barTintColor = darkGrey
         self.navigationController?.navigationBar.tintColor = darkGrey
@@ -51,7 +70,7 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
     }
     
-    func dataChanged(city: ParseCity) {
+    internal func dataChanged(city: ParseCity) {
         var cityToAppend = city
         weatherRequest.weatherRequest(cityToRequest: city) { (cityWeather) -> Void in
             cityToAppend.cityWeather = cityWeather
@@ -61,7 +80,7 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         }
     }
     
-    func requestWeatherForDefauldCities(selectedCities: [ParseCity]?) {
+    private func requestWeatherForDefauldCities(selectedCities: [ParseCity]?) {
         if selectedCities == nil { return }
         for i in 0..<selectedCities!.count {
             weatherRequest.weatherRequest(cityToRequest: selectedCities![i]) { (cityWeather) in
@@ -71,7 +90,7 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         }
     }
     
-    func checkForUserDefaults() {
+    private func checkForUserDefaults() {
         guard let citiesData = defaults.object(forKey: "selectedCities") as? Data else {
             selectedCities = [ParseCity]()
             return
@@ -128,7 +147,7 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         return cell
     }
     
-    func decideOptionalTemp(oneCity: ParseCity) -> String {
+    private func decideOptionalTemp(oneCity: ParseCity) -> String {
         guard let weather = oneCity.cityWeather?.listOfWeather[0].mainOfWeather.temp else { return String() }
         return weather
     }
@@ -143,7 +162,7 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         return string
     }
     
-    func caseForWeather(city: ParseCity) -> UIImage {
+    private func caseForWeather(city: ParseCity) -> UIImage {
         guard let variable = city.cityWeather?.listOfWeather[0].weatherDescription.main else { return UIImage() }
         switch variable {
         case "Thunderstorm":
@@ -168,6 +187,10 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate {
         guard let value = optionalValue else { return String() }
         let string = String(describing: value)
         return string
+    }
+    
+    internal func deleteCity(city: ParseCity) {
+        print("removing")
     }
     
 }

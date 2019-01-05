@@ -12,6 +12,7 @@ class ExtendedMenuVC: UIViewController {
     
     var city: ParseCity?
     var sortListOfWeather = [[ListOfWeather]]()
+    weak var delegateToMenu: DeleteCityDelegate?
     
     @IBOutlet weak var bigWeatherImageView: UIImageView!
     @IBOutlet weak var windImageView: UIImageView!
@@ -159,7 +160,6 @@ class ExtendedMenuVC: UIViewController {
         bigWeatherImageView.image = caseForWeather(weather: weather)
     }
     
-    
     func konvertCelvins(celvins: String) -> String {
         let kelvinKoef: Double = 273
         guard let celvini = Double(celvins) else { return String() }
@@ -207,6 +207,21 @@ class ExtendedMenuVC: UIViewController {
         setButtonsColor(number: 4)
     }
     
+    @IBAction func deleteCityButton(_ sender: Any) {
+        deleteAlert()
+    }
+    
+    func deleteAlert() {
+        let alert = UIAlertController.init(title: "Are you sure you want to delete \(String(describing: city?.name))?", message: nil, preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default) { (UIAlertAction) in
+            print("before removing")
+            self.delegateToMenu?.deleteCity(city: self.city!)
+        }
+        let cancelAction = UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
     
 }
 
@@ -217,3 +232,6 @@ public extension Array where Element: Hashable {
     }
 }
 
+protocol DeleteCityDelegate: class {
+    func deleteCity(city: ParseCity)
+}

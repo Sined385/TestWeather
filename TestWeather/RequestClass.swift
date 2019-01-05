@@ -14,16 +14,16 @@ let requestQ = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
 
 class WeatherRequest: NSObject {
     
-    let key = "fc411ce5be5c4b9985861401d501c0eb"
+    private let key = "fc411ce5be5c4b9985861401d501c0eb"
     
-    func weatherRequest(cityToRequest: ParseCity, completion: @escaping (CityWeather) -> Void) {
+    public func weatherRequest(cityToRequest: ParseCity, completion: @escaping (CityWeather) -> Void) {
         let url = "http://api.openweathermap.org/data/2.5/forecast?id=\(cityToRequest.id!)&APPID=\(key)"
         requestQ.async {
             request(url, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: nil).responseJSON { (response) in
                 switch(response.result) {
                 case .success(let data):
                     let json = data as! [String : AnyObject]
-                    let weatherForCity = self.parseWeather(data: json, city: cityToRequest)
+                    let weatherForCity = self.parseWeather(data: json)
                     mainQ.async {
                         guard let weatherForCity = weatherForCity else { return }
                         completion(weatherForCity)
@@ -35,7 +35,24 @@ class WeatherRequest: NSObject {
         }
     }
     
-    func parseWeather(data: [String : AnyObject], city: ParseCity) -> CityWeather? {
+    public func requestByCoordinates(lon: String, lat: String) {
+        let url = "http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&APPID=\(key)"
+        requestQ.async {
+            request(url, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: nil).responseJSON(completionHandler: { (response) in
+                switch(response.result) {
+                case .success(let data):
+                    let json = data as! [String : AnyObject]
+                    mainQ.async {
+                        print(json)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            })
+        }
+    }
+    
+    private func parseWeather(data: [String : AnyObject]) -> CityWeather? {
         let json = data
         let list = json["list"] as? [AnyObject]
         var cityWeather = CityWeather.init(cnt: String(), cod: String(), listOfWeather: [ListOfWeather]())
@@ -90,13 +107,17 @@ class WeatherRequest: NSObject {
         return cityWeather
     }
     
+    func parseCoordinateWeather(data: [String : AnyObject]) {
+        
+    }
+    
     private func decideOptional(optionalValue: Any?) -> String {
         guard let value = optionalValue else { return String() }
         let string = String(describing: value)
         return string
     }
     
-    func convertUnixDate(_ unixTimeStamp: String) -> String {
+    private func convertUnixDate(_ unixTimeStamp: String) -> String {
         let date = Date(timeIntervalSince1970: Double(unixTimeStamp)!)
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
@@ -106,7 +127,7 @@ class WeatherRequest: NSObject {
         return strDate
     }
     
-    func getDayOfWeek(_ today:String) -> Int? {
+    private func getDayOfWeek(_ today:String) -> Int? {
         let formatter  = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         guard let todayDate = formatter.date(from: today) else { return nil }
@@ -115,7 +136,7 @@ class WeatherRequest: NSObject {
         return weekDay
     }
     
-    func makeWeekDay(dayNumber: Int) -> String {
+    private func makeWeekDay(dayNumber: Int) -> String {
         switch dayNumber {
         case 1:
             return "Sunday"

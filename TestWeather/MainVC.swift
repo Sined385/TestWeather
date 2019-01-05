@@ -260,9 +260,7 @@ extension MainVC:  UISearchResultsUpdating {
     func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
     }
-    
 }
-
 
 protocol MenuCVCDelegate: class {
     func dataChanged(city: ParseCity)

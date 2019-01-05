@@ -312,7 +312,11 @@
                         <viewLayoutGuide key="safeArea" id="CHm-K5-ixe"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="XEQ-r4-4AG">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="rHA-pl-Bg9"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="Delete" id="rHA-pl-Bg9">
+                            <connections>
+                                <action selector="deleteCityButton:" destination="Via-Rs-hVn" id="ILn-DL-PCI"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="barWeatherButton0" destination="vlr-JZ-haF" id="jtC-g3-cFl"/>
@@ -408,4 +412,7 @@
             <point key="canvasLocation" x="-1668" y="-572"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Delete" width="26" height="26"/>
+    </resources>
 </document>
