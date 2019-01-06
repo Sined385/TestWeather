@@ -22,6 +22,8 @@
 		0491A1B521D681BF0099B4F2 /* ExtendedMenuVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1B421D681BF0099B4F2 /* ExtendedMenuVC.swift */; };
 		0491A1C721DD873C0099B4F2 /* WeatherBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1C621DD873B0099B4F2 /* WeatherBarButton.swift */; };
 		0491A1C921DD884C0099B4F2 /* WeatherBarButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0491A1C821DD884C0099B4F2 /* WeatherBarButton.xib */; };
+		0491A1CB21E16B080099B4F2 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1CA21E16B070099B4F2 /* Protocols.swift */; };
+		0491A1CD21E195A50099B4F2 /* CustomLongPress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491A1CC21E195A40099B4F2 /* CustomLongPress.swift */; };
 		7003DD5983F113760BCE53EB /* Pods_TestWeather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79E8A2EF1099E9B81F9FB2CB /* Pods_TestWeather.framework */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +45,8 @@
 		0491A1B421D681BF0099B4F2 /* ExtendedMenuVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedMenuVC.swift; sourceTree = "<group>"; };
 		0491A1C621DD873B0099B4F2 /* WeatherBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherBarButton.swift; sourceTree = "<group>"; };
 		0491A1C821DD884C0099B4F2 /* WeatherBarButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WeatherBarButton.xib; sourceTree = "<group>"; };
+		0491A1CA21E16B070099B4F2 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		0491A1CC21E195A40099B4F2 /* CustomLongPress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLongPress.swift; sourceTree = "<group>"; };
 		214A4402BDAFE278A8E38940 /* Pods-TestWeather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestWeather.release.xcconfig"; path = "Pods/Target Support Files/Pods-TestWeather/Pods-TestWeather.release.xcconfig"; sourceTree = "<group>"; };
 		79E8A2EF1099E9B81F9FB2CB /* Pods_TestWeather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestWeather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E7B8ADD4CDECEF1B53C7BD5 /* Pods-TestWeather.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestWeather.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TestWeather/Pods-TestWeather.debug.xcconfig"; sourceTree = "<group>"; };
@@ -83,12 +87,14 @@
 			children = (
 				04514060219C54380071AD08 /* Main.storyboard */,
 				0491A1B421D681BF0099B4F2 /* ExtendedMenuVC.swift */,
-				0491A1AE21D3CAF80099B4F2 /* RequestClass.swift */,
-				0491A1AC21CFB4030099B4F2 /* MenuCollectionCell.swift */,
 				0491A1AA21CA8FA30099B4F2 /* MenuCVC.swift */,
 				0456C133219C591E009D36EF /* MainVC.swift */,
+				0491A1AE21D3CAF80099B4F2 /* RequestClass.swift */,
+				0491A1AC21CFB4030099B4F2 /* MenuCollectionCell.swift */,
 				048E401F21C171BE00016A7B /* Structs.swift */,
+				0491A1CA21E16B070099B4F2 /* Protocols.swift */,
 				0451405C219C54380071AD08 /* AppDelegate.swift */,
+				0491A1CC21E195A40099B4F2 /* CustomLongPress.swift */,
 				0491A1C621DD873B0099B4F2 /* WeatherBarButton.swift */,
 				0491A1C821DD884C0099B4F2 /* WeatherBarButton.xib */,
 				04514068219C54390071AD08 /* LaunchScreen.storyboard */,
@@ -249,6 +255,8 @@
 				048E402021C171BE00016A7B /* Structs.swift in Sources */,
 				0491A1AB21CA8FA30099B4F2 /* MenuCVC.swift in Sources */,
 				04514065219C54380071AD08 /* TestWeather.xcdatamodeld in Sources */,
+				0491A1CB21E16B080099B4F2 /* Protocols.swift in Sources */,
+				0491A1CD21E195A50099B4F2 /* CustomLongPress.swift in Sources */,
 				0491A1B521D681BF0099B4F2 /* ExtendedMenuVC.swift in Sources */,
 				0456C134219C591E009D36EF /* MainVC.swift in Sources */,
 				0491A1AF21D3CAF80099B4F2 /* RequestClass.swift in Sources */,

@@ -12,11 +12,13 @@ import UserNotifications
 
 private let reuseIdentifier = "cell"
 
-class MenuCVC: UICollectionViewController, MenuCVCDelegate, CLLocationManagerDelegate, DeleteCityDelegate {
+class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
     
     var locationManager = CLLocationManager()
     var latitude: String?
     var longtitude: String?
+    
+    let extendedVC = ExtendedMenuVC()
 
     @IBAction func locationCleanButton(_ sender: Any) {
         //let defaults = UserDefaults.standard
@@ -27,11 +29,8 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate, CLLocationManagerDel
     }
     
     var selectedCities = [ParseCity]()
-    
     var currentIndex: IndexPath?
-    
     let weatherRequest = WeatherRequest.init()
-    
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
@@ -68,16 +67,6 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate, CLLocationManagerDel
         self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.backgroundColor : UIColor.white]
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
-    }
-    
-    internal func dataChanged(city: ParseCity) {
-        var cityToAppend = city
-        weatherRequest.weatherRequest(cityToRequest: city) { (cityWeather) -> Void in
-            cityToAppend.cityWeather = cityWeather
-            self.selectedCities.append(cityToAppend)
-            self.collectionView.reloadData()
-            self.defaults.set(try? PropertyListEncoder().encode(self.selectedCities), forKey: "selectedCities")
-        }
     }
     
     private func requestWeatherForDefauldCities(selectedCities: [ParseCity]?) {
@@ -144,6 +133,8 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate, CLLocationManagerDel
         let temperature = makeMinAndMaxTemp(minTemp: temperatureMin, maxTemp: temperatureMax)
         cell.temperatureLabel.text = temperature
         cell.weatherIconView.image = caseForWeather(city: selectedCities[indexPath.row])
+        let longPress = setUpLongPress(indexPath: indexPath.row)
+        cell.addGestureRecognizer(longPress)
         return cell
     }
     
@@ -189,8 +180,51 @@ class MenuCVC: UICollectionViewController, MenuCVCDelegate, CLLocationManagerDel
         return string
     }
     
-    internal func deleteCity(city: ParseCity) {
-        print("removing")
+    @objc func addLongPressGesture(gesture: CustomLongPress) {
+        if gesture.state == .began {
+            print("long tap")
+            guard let gestureIndex = gesture.cellIndex else { return }
+            collectionView.cellForItem(at: IndexPath.init(row: gestureIndex, section: 0))?.backgroundColor = UIColor.red
+        }
+        if gesture.state == .ended {
+            createDeleteAlert(index: gesture.cellIndex!)
+        }
+    }
+    
+    func setUpLongPress(indexPath: Int) -> CustomLongPress {
+        let longPressGesture = CustomLongPress.init(target: self, action: #selector(addLongPressGesture(gesture:)))
+        longPressGesture.setIndex(index: indexPath)
+        longPressGesture.minimumPressDuration = 1.0
+        return longPressGesture
+    }
+    
+    func createDeleteAlert(index: Int) {
+        let alert = UIAlertController.init(title: "Delete \(selectedCities[index].name)?", message: nil, preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default) { (UIAlertAction) in
+            self.selectedCities.remove(at: index)
+            self.defaults.set(try? PropertyListEncoder().encode(self.selectedCities), forKey: "selectedCities")
+            self.collectionView.reloadData()
+        }
+        let cancelAction = UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel) { (UIAlertAction) in
+            self.collectionView.cellForItem(at: IndexPath.init(row: index, section: 0))?.backgroundColor = lightGrey
+        }
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+}
+
+extension MenuCVC: MenuCVCDelegate {
+    
+    internal func dataChanged(city: ParseCity) {
+        var cityToAppend = city
+        weatherRequest.weatherRequest(cityToRequest: city) { (cityWeather) -> Void in
+            cityToAppend.cityWeather = cityWeather
+            self.selectedCities.append(cityToAppend)
+            self.collectionView.reloadData()
+            self.defaults.set(try? PropertyListEncoder().encode(self.selectedCities), forKey: "selectedCities")
+        }
     }
     
 }

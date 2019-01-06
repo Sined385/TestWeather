@@ -12,7 +12,6 @@ class ExtendedMenuVC: UIViewController {
     
     var city: ParseCity?
     var sortListOfWeather = [[ListOfWeather]]()
-    weak var delegateToMenu: DeleteCityDelegate?
     
     @IBOutlet weak var bigWeatherImageView: UIImageView!
     @IBOutlet weak var windImageView: UIImageView!
@@ -151,10 +150,9 @@ class ExtendedMenuVC: UIViewController {
         windSpeedLabel.text = weather.wind.speed + "m/s"
         let rain = weather.rain.chance
         print(rain)
-        if rain == nil {
+        if rain == "nil" {
             chanceLabel.text = "0" + "%"
         } else {
-            print(rain)
             chanceLabel.text = String.init(format: "%.f1", rain) + "%"
         }
         bigWeatherImageView.image = caseForWeather(weather: weather)
@@ -191,7 +189,6 @@ class ExtendedMenuVC: UIViewController {
         setButtonsColor(number: 1)
     }
     
-    
     @IBAction func barWeatherButtonAction2(_ sender: Any) {
         setLabelsText(weather: sortListOfWeather[2][0])
         setButtonsColor(number: 2)
@@ -208,21 +205,8 @@ class ExtendedMenuVC: UIViewController {
     }
     
     @IBAction func deleteCityButton(_ sender: Any) {
-        deleteAlert()
+        
     }
-    
-    func deleteAlert() {
-        let alert = UIAlertController.init(title: "Are you sure you want to delete \(String(describing: city?.name))?", message: nil, preferredStyle: UIAlertController.Style.alert)
-        let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default) { (UIAlertAction) in
-            print("before removing")
-            self.delegateToMenu?.deleteCity(city: self.city!)
-        }
-        let cancelAction = UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
-        alert.addAction(okAction)
-        alert.addAction(cancelAction)
-        present(alert, animated: true, completion: nil)
-    }
-    
 }
 
 public extension Array where Element: Hashable {
@@ -232,6 +216,4 @@ public extension Array where Element: Hashable {
     }
 }
 
-protocol DeleteCityDelegate: class {
-    func deleteCity(city: ParseCity)
-}
+

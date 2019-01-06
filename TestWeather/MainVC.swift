@@ -90,7 +90,7 @@ class MainVC: UITableViewController {
     
     func tableViewDesign() {
         self.tableView.backgroundColor = darkGrey
-        tableView.separatorColor = lightGrey
+        self.tableView.separatorColor = lightGrey
     }
     
     func sortCities(cities: [ParseCity]) -> [ParseCity] {
@@ -262,9 +262,7 @@ extension MainVC:  UISearchResultsUpdating {
     }
 }
 
-protocol MenuCVCDelegate: class {
-    func dataChanged(city: ParseCity)
-}
+
 
 
 
