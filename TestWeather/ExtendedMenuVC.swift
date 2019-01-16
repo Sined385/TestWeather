@@ -44,6 +44,8 @@ class ExtendedMenuVC: UIViewController {
         setThreeImages()
         setUpButtons()
         setButtonsColor(number: 0)
+        print(city?.coord?.lat)
+        print(city?.coord?.lon)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

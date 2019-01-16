@@ -12,4 +12,7 @@ protocol MenuCVCDelegate: class {
     func dataChanged(city: ParseCity)
 }
 
+protocol CheckForCityDuplicate: class {
+    func checkForDuplicate(city: ParseCity)
+}
 

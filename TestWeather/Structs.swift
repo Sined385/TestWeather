@@ -45,6 +45,7 @@ struct Wind: Codable, Equatable, Hashable {
     var deg: String
     var speed: String
 }
+
 struct Rain: Codable, Equatable, Hashable {
     var chance: String
 }

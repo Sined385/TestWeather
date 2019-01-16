@@ -35,23 +35,6 @@ class WeatherRequest: NSObject {
         }
     }
     
-    public func requestByCoordinates(lon: String, lat: String) {
-        let url = "http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&APPID=\(key)"
-        requestQ.async {
-            request(url, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: nil).responseJSON(completionHandler: { (response) in
-                switch(response.result) {
-                case .success(let data):
-                    let json = data as! [String : AnyObject]
-                    mainQ.async {
-                        print(json)
-                    }
-                case .failure(let error):
-                    print(error)
-                }
-            })
-        }
-    }
-    
     private func parseWeather(data: [String : AnyObject]) -> CityWeather? {
         let json = data
         let list = json["list"] as? [AnyObject]
@@ -107,10 +90,6 @@ class WeatherRequest: NSObject {
         return cityWeather
     }
     
-    func parseCoordinateWeather(data: [String : AnyObject]) {
-        
-    }
-    
     private func decideOptional(optionalValue: Any?) -> String {
         guard let value = optionalValue else { return String() }
         let string = String(describing: value)
@@ -159,6 +138,42 @@ class WeatherRequest: NSObject {
     
 }
 
+
+//Adding options to make request of city by coordinates
+
+extension WeatherRequest {
+    
+    public func requestByCoordinates(lon: String, lat: String, completionCoord: @escaping (ParseCity) -> Void) {
+        let url = "http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&APPID=\(key)"
+        requestQ.async {
+            request(url, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: nil).responseJSON(completionHandler: { (response) in
+                switch(response.result) {
+                case .success(let data):
+                    let json = data as! [String : AnyObject]
+                    var city = self.makeCityFromGotWithCoord(json: json, lon: lon, lat: lat)!
+                    self.weatherRequest(cityToRequest: city, completion: { (cityWeather) in
+                        city.cityWeather = cityWeather
+                        mainQ.async {
+                            completionCoord(city)
+                        }
+                    })
+                case .failure(let error):
+                    print(error)
+                }
+            })
+        }
+    }
+    
+    private func makeCityFromGotWithCoord(json: [String : AnyObject], lon: String, lat: String) -> ParseCity? {
+        guard let name = json["name"] else { return nil }
+        guard let id = json["id"] else { return nil }
+        guard let country = json["sys"]?["country"] else { return nil }
+        let coord = ParseCoord.init(lon: lon, lat: lat)
+        let city = ParseCity.init(name: name as! String, id: String.init(describing: id), country: country as? String, coord: coord, cityWeather: nil)
+        return city
+    }
+    
+}
 
 
 

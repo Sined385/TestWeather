@@ -103,7 +103,7 @@
                                 <segue destination="Oe9-Ij-zzJ" kind="show" identifier="tableSegue" id="xPY-nP-Deq"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="3er-ND-Kz8">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="Location" id="3er-ND-Kz8">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="locationCleanButton:" destination="OVS-R3-1jo" id="P3B-ZU-jPk"/>
@@ -314,7 +314,7 @@
                         <viewLayoutGuide key="safeArea" id="CHm-K5-ixe"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="XEQ-r4-4AG">
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="Delete" id="rHA-pl-Bg9">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="Add" id="rHA-pl-Bg9">
                             <connections>
                                 <action selector="deleteCityButton:" destination="Via-Rs-hVn" id="ILn-DL-PCI"/>
                             </connections>
@@ -389,6 +389,9 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Select City" id="wlP-3Q-OMk"/>
+                    <connections>
+                        <segue destination="Via-Rs-hVn" kind="show" identifier="mainVCToExtended" id="CZ6-nW-l9L"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="stE-Ju-H82" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -415,6 +418,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Delete" width="26" height="26"/>
+        <image name="Add" width="26" height="26"/>
+        <image name="Location" width="26" height="26"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="TAq-HL-v4H"/>
+    </inferredMetricsTieBreakers>
 </document>

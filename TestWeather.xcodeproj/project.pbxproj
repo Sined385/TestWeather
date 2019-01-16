@@ -68,7 +68,6 @@
 			isa = PBXGroup;
 			children = (
 				0451405B219C54380071AD08 /* TestWeather */,
-				0451405A219C54380071AD08 /* Products */,
 				EC90957B1B0C4E00D792EFC1 /* Pods */,
 				DC23A3A1D28278F4FFFD4CE5 /* Frameworks */,
 			);
@@ -118,6 +117,7 @@
 		EC90957B1B0C4E00D792EFC1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				0451405A219C54380071AD08 /* Products */,
 				9E7B8ADD4CDECEF1B53C7BD5 /* Pods-TestWeather.debug.xcconfig */,
 				214A4402BDAFE278A8E38940 /* Pods-TestWeather.release.xcconfig */,
 			);

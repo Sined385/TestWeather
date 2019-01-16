@@ -54,6 +54,7 @@ class MainVC: UITableViewController {
         sortedCitiesDict = sortDictionaryForCities()
     }
     
+    //get cities data from json file "city.list.json"
     func makeCitiesList() {
         print("making list")
         kBgQ.async {
@@ -75,6 +76,7 @@ class MainVC: UITableViewController {
         }
     }
     
+    //parse cities data
     func parseCities(json: JSON) {
         for i in 0..<json.count {
             let id = json[i]["id"]
@@ -88,16 +90,19 @@ class MainVC: UITableViewController {
         }
     }
     
+    //table view colors
     func tableViewDesign() {
         self.tableView.backgroundColor = darkGrey
         self.tableView.separatorColor = lightGrey
     }
     
+    //sort cities in alphabetic order
     func sortCities(cities: [ParseCity]) -> [ParseCity] {
         let citiesSorted = cities.sorted(by: {$0.name < $1.name})
         return citiesSorted
     }
     
+    //make dictionary of cities by one letter as a key
     func makeCitiesDict() -> [String : [ParseCity]] {
         let sortedCities = sortCities(cities: cities)
         var citiesDictForTable: [String : [ParseCity]] = [:]
@@ -113,11 +118,13 @@ class MainVC: UITableViewController {
         return citiesDictForTable
     }
     
+    //sort dictionary in alphabetic order
     func sortDictionaryForCities() -> [(key: String, value: [ParseCity])] {
         let sortedDict = makeCitiesDict().sorted(by: { $0.0 < $1.0 })
         return sortedDict
     }
     
+    //alert to add one city to collection view controller
     func createAddAlert(city: ParseCity) {
         let alert = UIAlertController.init(title: "Add \(city.name) ?", message: nil, preferredStyle: UIAlertController.Style.alert)
         let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default) { (UIAlertAction) in
@@ -129,6 +136,7 @@ class MainVC: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    //function to send data to collection view controller
     func addCity(city: ParseCity) {
         delegateToMenu?.dataChanged(city: city)
         print(city)
@@ -188,6 +196,7 @@ extension MainVC {
         } else {
             createAddAlert(city: sortedCitiesDict[indexPath.section].value[indexPath.row])
         }
+        
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -202,6 +211,8 @@ extension MainVC {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search city"
+        let cancelButtonAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key(rawValue: NSAttributedString.Key.foregroundColor.rawValue): UIColor.white]
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(cancelButtonAttributes, for: .normal)
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
     }
     
@@ -219,6 +230,7 @@ extension MainVC {
 
 extension MainVC:  UISearchResultsUpdating {
     
+    //search controller init
     func createSearchController() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
@@ -233,6 +245,7 @@ extension MainVC:  UISearchResultsUpdating {
     func searchBarIsEmpty() -> Bool {
         return searchController.searchBar.text?.isEmpty ?? true
     }
+    
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         var values = [ParseCity]()
@@ -257,6 +270,7 @@ extension MainVC:  UISearchResultsUpdating {
         return filtered
     }
     
+    //check if filtering mode on (true = on)
     func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
     }

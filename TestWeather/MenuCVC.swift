@@ -19,14 +19,8 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
     var longtitude: String?
     
     let extendedVC = ExtendedMenuVC()
-
-    @IBAction func locationCleanButton(_ sender: Any) {
-        //let defaults = UserDefaults.standard
-        //defaults.set(nil, forKey: "selectedCities")
-        //selectedCities = []
-        weatherRequest.requestByCoordinates(lon: longtitude!, lat: latitude!)
-        collectionView.reloadData()
-    }
+    
+    let animationQ = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
     
     var selectedCities = [ParseCity]()
     var currentIndex: IndexPath?
@@ -57,7 +51,7 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
             }
         }
     }
-
+    
     private func designNavController() {
         self.navigationController?.navigationBar.backgroundColor = darkGrey
         self.navigationController?.navigationBar.barTintColor = darkGrey
@@ -79,6 +73,7 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
         }
     }
     
+    //Check if there are data in Userdefaults
     private func checkForUserDefaults() {
         guard let citiesData = defaults.object(forKey: "selectedCities") as? Data else {
             selectedCities = [ParseCity]()
@@ -105,23 +100,22 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
         }
     }
     
+    // MARK: UICollectionViewDataSource
+    
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentIndex = indexPath
         collectionView.reloadData()
         performSegue(withIdentifier: "extendedMenuSegue", sender: nil)
     }
     
-   
-    // MARK: UICollectionViewDataSource
-
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return selectedCities.count
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MenuCollectionCell
         cell.backgroundColor = lightGrey
@@ -129,20 +123,22 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
         cell.cityLabel.textColor = white
         cell.temperatureLabel.textColor = white
         guard let temperatureMin = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMin else { return UICollectionViewCell() }
-         guard let temperatureMax = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMax else { return UICollectionViewCell() }
+        guard let temperatureMax = selectedCities[indexPath.row].cityWeather?.listOfWeather[0].mainOfWeather.tempMax else { return UICollectionViewCell() }
         let temperature = makeMinAndMaxTemp(minTemp: temperatureMin, maxTemp: temperatureMax)
         cell.temperatureLabel.text = temperature
         cell.weatherIconView.image = caseForWeather(city: selectedCities[indexPath.row])
-        let longPress = setUpLongPress(indexPath: indexPath.row)
+        let longPress = setUpLongPress(indexPath: indexPath.item)
         cell.addGestureRecognizer(longPress)
         return cell
     }
     
+    //get rid of optional to display data
     private func decideOptionalTemp(oneCity: ParseCity) -> String {
         guard let weather = oneCity.cityWeather?.listOfWeather[0].mainOfWeather.temp else { return String() }
         return weather
     }
     
+    //make current minimal and maximum temperature to display on temp label
     func makeMinAndMaxTemp(minTemp: String, maxTemp: String) -> String {
         let kelvinKoef: Double = 273
         guard let minimum = Double(minTemp) else { return String() }
@@ -153,6 +149,7 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
         return string
     }
     
+    //check which image set for one city weather
     private func caseForWeather(city: ParseCity) -> UIImage {
         guard let variable = city.cityWeather?.listOfWeather[0].weatherDescription.main else { return UIImage() }
         switch variable {
@@ -174,30 +171,37 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
         }
     }
     
+    //get rid of extra optional
     private func decideOptional(optionalValue: Any?) -> String {
         guard let value = optionalValue else { return String() }
         let string = String(describing: value)
         return string
     }
     
+    
+    //long press gesture for one cell to delete an item in collection view
     @objc func addLongPressGesture(gesture: CustomLongPress) {
         if gesture.state == .began {
-            print("long tap")
             guard let gestureIndex = gesture.cellIndex else { return }
-            collectionView.cellForItem(at: IndexPath.init(row: gestureIndex, section: 0))?.backgroundColor = UIColor.red
+            UIView.animate(withDuration: 0.5, animations: {
+                self.collectionView.cellForItem(at: IndexPath.init(item: gestureIndex, section: 0))?.backgroundColor = UIColor.red
+            }, completion: nil)
         }
         if gesture.state == .ended {
-            createDeleteAlert(index: gesture.cellIndex!)
+            guard let gestureIndex = gesture.cellIndex else { return }
+            createDeleteAlert(index: gestureIndex)
         }
     }
     
+    //set up long press gesture with item index in
     func setUpLongPress(indexPath: Int) -> CustomLongPress {
         let longPressGesture = CustomLongPress.init(target: self, action: #selector(addLongPressGesture(gesture:)))
         longPressGesture.setIndex(index: indexPath)
-        longPressGesture.minimumPressDuration = 1.0
+        longPressGesture.minimumPressDuration = 0.5
         return longPressGesture
     }
     
+    //alert to delete one item
     func createDeleteAlert(index: Int) {
         let alert = UIAlertController.init(title: "Delete \(selectedCities[index].name)?", message: nil, preferredStyle: UIAlertController.Style.alert)
         let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default) { (UIAlertAction) in
@@ -206,25 +210,43 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
             self.collectionView.reloadData()
         }
         let cancelAction = UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel) { (UIAlertAction) in
-            self.collectionView.cellForItem(at: IndexPath.init(row: index, section: 0))?.backgroundColor = lightGrey
+            UIView.animate(withDuration: 0.5, animations: {
+                self.collectionView.cellForItem(at: IndexPath.init(item: index, section: 0))?.backgroundColor = lightGrey
+            }, completion: nil)
         }
+        alert.setDefaultColors()
         alert.addAction(okAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func locationCleanButton(_ sender: Any) {
+        weatherRequest.requestByCoordinates(lon: longtitude!, lat: latitude!) { (city) in
+            self.selectedCities.append(city)
+            self.collectionView.reloadData()
+            self.setUserDefaults(selectedCities: self.selectedCities)
+        }
+        collectionView.reloadData()
     }
     
 }
 
 extension MenuCVC: MenuCVCDelegate {
     
+    //delegate to get selected city and change data
     internal func dataChanged(city: ParseCity) {
         var cityToAppend = city
         weatherRequest.weatherRequest(cityToRequest: city) { (cityWeather) -> Void in
             cityToAppend.cityWeather = cityWeather
             self.selectedCities.append(cityToAppend)
             self.collectionView.reloadData()
-            self.defaults.set(try? PropertyListEncoder().encode(self.selectedCities), forKey: "selectedCities")
+            self.setUserDefaults(selectedCities: self.selectedCities)
         }
     }
     
+    func setUserDefaults(selectedCities: [ParseCity]) {
+        self.defaults.set(try? PropertyListEncoder().encode(selectedCities), forKey: "selectedCities")
+    }
+    
 }
+
