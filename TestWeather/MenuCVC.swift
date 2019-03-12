@@ -50,6 +50,14 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
                 }
             }
         }
+        if status == .authorizedWhenInUse {
+            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
+                if CLLocationManager.isRangingAvailable() {
+                    self.latitude = String.init(format: "%.f", locationManager.location!.coordinate.latitude)
+                    self.longtitude = String.init(format: "%.f", locationManager.location!.coordinate.longitude)
+                }
+            }
+        }
     }
     
     private func designNavController() {
@@ -220,8 +228,19 @@ class MenuCVC: UICollectionViewController, CLLocationManagerDelegate {
         present(alert, animated: true, completion: nil)
     }
     
+    func createLocationErrorAlert() {
+        let alert = UIAlertController.init(title: "Location error", message: "Location is unavailable now", preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction.init(title: "Ok", style: UIAlertAction.Style.default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
     @IBAction func locationCleanButton(_ sender: Any) {
-        weatherRequest.requestByCoordinates(lon: longtitude!, lat: latitude!) { (city) in
+        guard let lon = self.longtitude else { createLocationErrorAlert()
+            return }
+        guard let lat = self.latitude else { createLocationErrorAlert()
+            return }
+        weatherRequest.requestByCoordinates(lon: lon, lat: lat) { (city) in
             self.selectedCities.append(city)
             self.collectionView.reloadData()
             self.setUserDefaults(selectedCities: self.selectedCities)
